@@ -3,28 +3,8 @@
 #include <math.h>
 
 #include "./headers/mnist.h"
+#include "./headers/distances.h"
 
-
-float *distances(float* x1, float* x2, int n_features, int n_samples) {
-  float *values = malloc(sizeof(float) * n_samples);
-
-#pragma omp parallel for
-  for (int i = 0; i < n_samples; i++) {
-    values[i] = 0.0f;
-  }
-
-#pragma omp parallel for
-  for (int i = 0; i < n_samples; i++) {
-    for (int j = 0; j < n_features; j++) {
-      int n = i * n_features + j;
-      float diference = (x1[n] - x2[n]);
-      values[i] += diference * diference;
-    }
-    values[i] = sqrtf(values[i]);
-  }
-
-  return values;
-}
 
 int main() {
   Dataset training = load_training_data();
@@ -35,6 +15,26 @@ int main() {
 
   display_label(testing, 0);
   display_digit_bw(testing, 0);
+
+  float *d = distances(training.images,
+		       testing.images,
+		       0,
+		       training.image_size,
+		       training.n_images);
+
+  float min_distance = d[0];
+  int min_idx = 0;
+  for (int i = 0; i < training.n_images; i++) {
+    if (d[i] < min_distance) {
+      min_distance = d[i];
+      min_idx = i;
+    }
+  }
+
+  printf("------------------\n");
+  printf("MIN DISTANCE: %f\n", min_distance);
+  display_label(training, min_idx);
+  display_digit_bw(training, min_idx);
 
   free(training.images);
   free(training.labels);
