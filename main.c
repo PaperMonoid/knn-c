@@ -36,6 +36,7 @@ int main() {
   display_label(training, min_idx);
   display_digit_bw(training, min_idx);
 
+  free(d);
   free(training.images);
   free(training.labels);
   free(testing.images);
