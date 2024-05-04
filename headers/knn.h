@@ -3,6 +3,6 @@
 
 #include "./mnist.h"
 
-int *knn(int k_neighbors, Dataset training, char* sample, int idx);
+int knn(int k_neighbors, Dataset training, char* sample, int idx);
 
 #endif

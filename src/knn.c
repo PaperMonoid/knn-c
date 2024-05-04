@@ -5,7 +5,7 @@
 #include "../headers/distances.h"
 
 
-int *knn(int k_neighbors, Dataset training, char* sample, int idx) {
+int knn(int k_neighbors, Dataset training, char* sample, int idx) {
   float *d = distances(training.images,
 		       sample,
 		       idx,
@@ -23,8 +23,6 @@ int *knn(int k_neighbors, Dataset training, char* sample, int idx) {
 
   for (int i = 0; i < training.n_images; i++) {
     if (d[i] < min_ds[last]) {
-      //printf("distance %d, label: %d: %f\n", i, training.labels[i], d[i]);
-
       int k = 0;
       for (; k < k_neighbors; k++) {
 	if (d[i] < min_ds[k]) {
@@ -48,12 +46,40 @@ int *knn(int k_neighbors, Dataset training, char* sample, int idx) {
     }
   }
 
+  int *indices = malloc(sizeof(int) * k_neighbors);
+  int *counts = malloc(sizeof(int) * k_neighbors);
+  int size = 0;
   for (int i = 0; i < k_neighbors; i++) {
-    printf("distance %d: %f\n", i, min_ds[i]);
+    int index_of = -1;
+    for (int j = 0; j < size; j++) {
+      if (indices[j] == training.labels[min_is[j]]) {
+	index_of = j;
+	break;
+      }
+    }
+    if (index_of > -1) {
+      counts[index_of]++;
+    } else {
+      indices[size] = training.labels[min_is[i]];
+      counts[size] = 0;
+      size++;
+    }
+  }
+
+  int mode = indices[0];
+  int mode_freq = counts[0];
+  for (int i = 0; i < size; i++) {
+    if (counts[i] > mode_freq) {
+      mode = indices[i];
+      mode_freq = counts[i];
+    }
   }
 
   free(d);
+  free(indices);
+  free(counts);
+  free(min_is);
   free(min_ds);
 
-  return min_is;
+  return mode;
 }
