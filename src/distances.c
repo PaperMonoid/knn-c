@@ -18,7 +18,7 @@ float *distances(char* x1, char* x2, int idx, int n_features, int n_samples) {
     __m256 msum = _mm256_setzero_ps();
     __m256 mdiff = _mm256_setzero_ps();
 
-    for (; j < n_features; j += 8) {
+    for (; j + 8 < n_features; j += 8) {
       int nx1 = i * n_features + j;
       int nx2 = idx * n_features + j;
       float x1_tmp[8];
@@ -42,7 +42,7 @@ float *distances(char* x1, char* x2, int idx, int n_features, int n_samples) {
       int nx1 = i * n_features + j;
       int nx2 = idx * n_features + j;
       float diference = ((float)((unsigned char) x1[nx1]) -
-			 (float) ((unsigned char) x2[nx2]));
+			 (float)((unsigned char) x2[nx2]));
       values[i] += diference * diference;
     }
 

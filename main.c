@@ -3,40 +3,35 @@
 #include <math.h>
 
 #include "./headers/mnist.h"
-#include "./headers/distances.h"
+#include "./headers/knn.h"
 
 
 int main() {
   Dataset training = load_training_data();
   Dataset testing = load_testing_data();
 
-  display_label(training, 0);
-  display_digit_bw(training, 0);
+  int idx = 4;
 
-  display_label(testing, 0);
-  display_digit_bw(testing, 0);
+  display_label(testing, idx);
+  display_digit_bw(testing, idx);
 
-  float *d = distances(training.images,
-		       testing.images,
-		       0,
-		       training.image_size,
-		       training.n_images);
+  printf("BEFORE %d\n", idx);
 
-  float min_distance = d[0];
-  int min_idx = 0;
-  for (int i = 0; i < training.n_images; i++) {
-    if (d[i] < min_distance) {
-      min_distance = d[i];
-      min_idx = i;
-    }
-  }
+  int *min_idx = knn(5, training, testing.images, idx);
 
   printf("------------------\n");
-  printf("MIN DISTANCE: %f\n", min_distance);
-  display_label(training, min_idx);
-  display_digit_bw(training, min_idx);
+  display_label(training, min_idx[0]);
+  display_digit_bw(training, min_idx[0]);
+  display_label(training, min_idx[1]);
+  display_digit_bw(training, min_idx[1]);
+  display_label(training, min_idx[2]);
+  display_digit_bw(training, min_idx[2]);
+  display_label(training, min_idx[3]);
+  display_digit_bw(training, min_idx[3]);
+  display_label(training, min_idx[4]);
+  display_digit_bw(training, min_idx[4]);
 
-  free(d);
+  free(min_idx);
   free(training.images);
   free(training.labels);
   free(testing.images);
